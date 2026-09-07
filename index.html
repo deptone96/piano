@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#21241d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Ricomincio da qui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #21241d;
+    --surface: #2b2f26;
+    --surface-2: #343a2e;
+    --ink: #f2efe6;
+    --ink-dim: #b7bba8;
+    --line: #454b3c;
+    --circuit: #c99a4a;
+    --cardio: #c07d6e;
+    --rest: #7a8f7c;
+    --done: #8fae7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.5;
+    padding: 28px 18px 60px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    color: var(--ink-dim);
+    margin: 0 0 22px;
+    font-size: 0.95rem;
+    max-width: 46ch;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .stat .num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  .stat .lbl {
+    color: var(--ink-dim);
+    font-size: 0.78rem;
+    margin-top: 2px;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--done);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .tab.active {
+    background: var(--surface-2);
+    color: var(--ink);
+    border-color: var(--done);
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 16px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .day-card.done { border-color: var(--done); background: #2c3327; }
+
+  .check-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-size: 1rem;
+    transition: all 0.15s;
+    margin-top: 2px;
+  }
+  .check-btn.checked {
+    background: var(--done);
+    border-color: var(--done);
+    color: var(--bg);
+  }
+
+  .day-body { flex: 1; min-width: 0; }
+  .day-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .day-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .day-date { color: var(--ink-dim); font-size: 0.78rem; white-space: nowrap; }
+
+  .day-type {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .day-type.circuit { background: rgba(201,154,74,0.18); color: var(--circuit); }
+  .day-type.cardio { background: rgba(192,125,110,0.18); color: var(--cardio); }
+  .day-type.rest { background: rgba(122,143,124,0.18); color: var(--rest); }
+
+  .ex-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+  .ex-list li {
+    padding: 3px 0;
+    border-top: 1px dashed var(--line);
+  }
+  .ex-list li:first-child { border-top: none; }
+  .ex-list .ex-name { color: var(--ink); }
+
+  .week-note {
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+
+  .main-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .main-tab {
+    background: transparent;
+    border: none;
+    color: var(--ink-dim);
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 6px 4px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-right: 14px;
+  }
+  .main-tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--done);
+  }
+
+  .diet-principles {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .diet-principles h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+  .diet-principles ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink-dim);
+    font-size: 0.88rem;
+  }
+  .diet-principles li { padding: 3px 0; }
+  .diet-principles .ex-name { color: var(--ink); }
+
+  .diet-check-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .diet-check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+    cursor: pointer;
+  }
+  .diet-check-item .box {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--line);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+  }
+  .diet-check-item.on .box {
+    background: var(--circuit);
+    border-color: var(--circuit);
+    color: var(--bg);
+  }
+  .diet-check-item.on span.label { color: var(--ink); }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Ricomincio da qui</h1>
+    <p>Piano di 28 giorni — corpo libero e cardio leggero, nessuna palestra. Parti da 170&nbsp;cm / 72&nbsp;kg il 7 settembre 2026. Segna ogni giorno che completi.</p>
+  </header>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num" id="stat-done">0/28</div><div class="lbl" id="stat-done-lbl">Giorni completati</div></div>
+    <div class="stat"><div class="num" id="stat-streak">0</div><div class="lbl" id="stat-streak-lbl">Serie attuale</div></div>
+    <div class="stat"><div class="num" id="stat-week">1</div><div class="lbl">Settimana</div></div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <div class="main-tabs">
+    <button class="main-tab active" id="main-tab-workout">Allenamento</button>
+    <button class="main-tab" id="main-tab-diet">Alimentazione</button>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="week-note" class="week-note"></div>
+
+  <div id="diet-principles" class="diet-principles" style="display:none;">
+    <h3>Regole di base, tutti i giorni</h3>
+    <ul>
+      <li><span class="ex-name">Proteine</span> ad ogni pasto: uova, yogurt greco, legumi, pollo, pesce, affettati magri</li>
+      <li><span class="ex-name">Verdura</span> abbondante a pranzo e cena, frutta 1-2 volte al giorno</li>
+      <li><span class="ex-name">Acqua</span>: almeno 1,5-2 litri al giorno</li>
+      <li><span class="ex-name">Riduci</span> (non eliminare): fritti, bibite zuccherate, alcol, snack confezionati</li>
+      <li>Piccolo deficit calorico, niente estremi: in un mese l'obiettivo è perdere gonfiore e qualche kg, non stravolgerti</li>
+    </ul>
+  </div>
+
+  <div id="days"></div>
+
+  <footer>I dati dei check si salvano automaticamente su questo dispositivo.</footer>
+</div>
+
+<script>
+const START = new Date(2026, 8, 7); // 7 settembre 2026
+const WEEKDAYS = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+const MONTHS = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+
+// pattern per giorno della settimana (0=lun ... 6=dom)
+const PATTERN = ['circuit','cardio','rest','circuit','cardio','circuit_light','rest'];
+
+function circuitExercises(week) {
+  if (week <= 2) {
+    return {
+      giri: 3,
+      list: [
+        ['Squat a corpo libero', '12 ripetizioni'],
+        ['Push-up (in ginocchio se serve)', '8-10 ripetizioni'],
+        ['Plank', '30 secondi'],
+        ['Affondi alternati', '10 per gamba'],
+        ['Glute bridge', '15 ripetizioni'],
+      ]
+    };
+  }
+  return {
+    giri: 4,
+    list: [
+      ['Squat a corpo libero', '15 ripetizioni'],
+      ['Push-up', '10-12 ripetizioni'],
+      ['Plank', '40 secondi'],
+      ['Affondi alternati', '12 per gamba'],
+      ['Glute bridge', '18 ripetizioni'],
+      ['Mountain climber', '20 (10 per gamba)'],
+      ['Superman', '12 ripetizioni'],
+    ]
+  };
+}
+
+function dayData(dayIndex) {
+  // dayIndex 0-27
+  const week = Math.floor(dayIndex / 7) + 1;
+  const dow = dayIndex % 7;
+  const type = PATTERN[dow];
+  const date = new Date(START);
+  date.setDate(START.getDate() + dayIndex);
+  const dateLabel = `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+
+  let title, typeLabel, typeClass, exercises = [], note = null;
+
+  if (type === 'circuit' || type === 'circuit_light') {
+    const c = circuitExercises(week);
+    const giri = type === 'circuit_light' ? Math.max(2, c.giri - 1) : c.giri;
+    title = type === 'circuit_light' ? 'Circuito leggero' : 'Circuito corpo libero';
+    typeLabel = 'Allenamento';
+    typeClass = 'circuit';
+    exercises = c.list.map(([name, reps]) => [name, reps]);
+    note = `${giri} giri, riposo 60-90 secondi tra un giro e l'altro.`;
+  } else if (type === 'cardio') {
+    typeLabel = 'Cardio';
+    typeClass = 'cardio';
+    if (week <= 2) {
+      title = 'Camminata veloce';
+      exercises = [['Camminata a passo sostenuto', '25-30 minuti']];
+    } else {
+      title = 'Camminata con scatti';
+      exercises = [
+        ['Camminata a passo sostenuto', '20 minuti'],
+        ['Scatti (corsa leggera o passo molto veloce)', '6 x 30 secondi'],
+        ['Recupero camminando lento', '90 secondi tra uno scatto e l\'altro'],
+      ];
+    }
+  } else {
+    title = dow === 6 ? 'Riposo completo' : 'Riposo attivo';
+    typeLabel = 'Riposo';
+    typeClass = 'rest';
+    if (dow === 6) {
+      exercises = [['Nessun allenamento programmato', 'recupera bene, dormi']];
+    } else {
+      exercises = [['Stretching', '10 minuti: quadricipiti, femorali, schiena, spalle']];
+    }
+  }
+
+  return {
+    id: dayIndex + 1,
+    week, dow, dateLabel,
+    weekday: WEEKDAYS[dow],
+    title, typeLabel, typeClass, exercises, note
+  };
+}
+
+const DIET_ITEMS = ['Proteine ad ogni pasto', 'Verdura a pranzo e cena', 'Acqua 1,5-2L', 'Niente alcol/fritti/bibite zuccherate'];
+
+const ALL_DAYS = Array.from({length: 28}, (_, i) => dayData(i));
+let currentWeek = 1;
+let currentSection = 'workout';
+let checkedState = {};
+let dietState = {};
+
+async function loadState() {
+  try {
+    const res = await window.storage.get('piano-ripartenza-checks', false);
+    checkedState = res && res.value ? JSON.parse(res.value) : {};
+  } catch (e) {
+    checkedState = {};
+  }
+  try {
+    const res2 = await window.storage.get('piano-ripartenza-diet', false);
+    dietState = res2 && res2.value ? JSON.parse(res2.value) : {};
+  } catch (e) {
+    dietState = {};
+  }
+  render();
+}
+
+async function saveState() {
+  try {
+    await window.storage.set('piano-ripartenza-checks', JSON.stringify(checkedState), false);
+  } catch (e) {
+    console.error('Impossibile salvare', e);
+  }
+}
+
+async function saveDietState() {
+  try {
+    await window.storage.set('piano-ripartenza-diet', JSON.stringify(dietState), false);
+  } catch (e) {
+    console.error('Impossibile salvare', e);
+  }
+}
+
+function toggleDay(id) {
+  checkedState[id] = !checkedState[id];
+  saveState();
+  render();
+}
+
+function toggleDiet(dayId, itemIdx) {
+  const key = `${dayId}-${itemIdx}`;
+  dietState[key] = !dietState[key];
+  saveDietState();
+  render();
+}
+
+function computeStreak() {
+  let streak = 0;
+  for (let i = ALL_DAYS.length - 1; i >= 0; i--) {
+    if (checkedState[ALL_DAYS[i].id]) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = '';
+  for (let w = 1; w <= 4; w++) {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (w === currentWeek ? ' active' : '');
+    btn.textContent = `Settimana ${w}`;
+    btn.onclick = () => { currentWeek = w; render(); };
+    tabs.appendChild(btn);
+  }
+}
+
+function renderWeekNote() {
+  const note = document.getElementById('week-note');
+  if (currentWeek <= 2) {
+    note.textContent = 'Fase 1-2: costruisci l\'abitudine. Volume moderato, cardio a camminata. L\'obiettivo è non saltare i giorni, non spingere al massimo.';
+  } else {
+    note.textContent = 'Fase 3-4: aumenta leggermente il carico. Più giri nel circuito, scatti brevi nel cardio. Se un giorno sei troppo stanco, fai comunque la versione ridotta invece di saltare.';
+  }
+}
+
+function dietDoneCountForDay(dayId) {
+  let n = 0;
+  DIET_ITEMS.forEach((_, idx) => { if (dietState[`${dayId}-${idx}`]) n++; });
+  return n;
+}
+
+function totalDietDone() {
+  let n = 0;
+  ALL_DAYS.forEach(d => { n += dietDoneCountForDay(d.id); });
+  return n;
+}
+
+function render() {
+  document.getElementById('main-tab-workout').classList.toggle('active', currentSection === 'workout');
+  document.getElementById('main-tab-diet').classList.toggle('active', currentSection === 'diet');
+  document.getElementById('diet-principles').style.display = currentSection === 'diet' ? 'block' : 'none';
+
+  renderTabs();
+  renderWeekNote();
+
+  const daysContainer = document.getElementById('days');
+  daysContainer.innerHTML = '';
+  const weekDays = ALL_DAYS.filter(d => d.week === currentWeek);
+
+  if (currentSection === 'workout') {
+    weekDays.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'day-card' + (checkedState[d.id] ? ' done' : '');
+
+      const btn = document.createElement('button');
+      btn.className = 'check-btn' + (checkedState[d.id] ? ' checked' : '');
+      btn.setAttribute('aria-label', 'Segna come fatto');
+      btn.textContent = checkedState[d.id] ? '✓' : '';
+      btn.onclick = () => toggleDay(d.id);
+
+      const body = document.createElement('div');
+      body.className = 'day-body';
+
+      const top = document.createElement('div');
+      top.className = 'day-top';
+      top.innerHTML = `<span class="day-title">Giorno ${d.id} — ${d.title}</span><span class="day-date">${d.weekday} ${d.dateLabel}</span>`;
+
+      const typeTag = document.createElement('span');
+      typeTag.className = 'day-type ' + d.typeClass;
+      typeTag.textContent = d.typeLabel;
+
+      const list = document.createElement('ul');
+      list.className = 'ex-list';
+      d.exercises.forEach(([name, reps]) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="ex-name">${name}</span> — ${reps}`;
+        list.appendChild(li);
+      });
+
+      body.appendChild(top);
+      body.appendChild(typeTag);
+      body.appendChild(list);
+      if (d.note) {
+        const noteEl = document.createElement('div');
+        noteEl.style.cssText = 'font-size:0.78rem;color:var(--ink-dim);margin-top:6px;';
+        noteEl.textContent = d.note;
+        body.appendChild(noteEl);
+      }
+
+      card.appendChild(btn);
+      card.appendChild(body);
+      daysContainer.appendChild(card);
+    });
+  } else {
+    weekDays.forEach(d => {
+      const doneN = dietDoneCountForDay(d.id);
+      const card = document.createElement('div');
+      card.className = 'day-card' + (doneN === DIET_ITEMS.length ? ' done' : '');
+      card.style.alignItems = 'flex-start';
+
+      const body = document.createElement('div');
+      body.className = 'day-body';
+      body.style.width = '100%';
+
+      const top = document.createElement('div');
+      top.className = 'day-top';
+      top.innerHTML = `<span class="day-title">Giorno ${d.id}</span><span class="day-date">${d.weekday} ${d.dateLabel}</span>`;
+      body.appendChild(top);
+
+      const ul = document.createElement('ul');
+      ul.className = 'diet-check-list';
+      DIET_ITEMS.forEach((item, idx) => {
+        const key = `${d.id}-${idx}`;
+        const li = document.createElement('li');
+        li.className = 'diet-check-item' + (dietState[key] ? ' on' : '');
+        li.innerHTML = `<span class="box">${dietState[key] ? '✓' : ''}</span><span class="label">${item}</span>`;
+        li.onclick = () => toggleDiet(d.id, idx);
+        ul.appendChild(li);
+      });
+      body.appendChild(ul);
+      card.appendChild(body);
+      daysContainer.appendChild(card);
+    });
+  }
+
+  if (currentSection === 'workout') {
+    const doneCount = ALL_DAYS.filter(d => checkedState[d.id]).length;
+    document.getElementById('stat-done-lbl').textContent = 'Giorni completati';
+    document.getElementById('stat-streak-lbl').textContent = 'Serie attuale';
+    document.getElementById('stat-done').textContent = `${doneCount}/28`;
+    document.getElementById('stat-streak').textContent = computeStreak();
+    document.getElementById('progress-fill').style.width = `${Math.round((doneCount/28)*100)}%`;
+  } else {
+    const totalPossible = 28 * DIET_ITEMS.length;
+    const done = totalDietDone();
+    const perfectDays = ALL_DAYS.filter(d => dietDoneCountForDay(d.id) === DIET_ITEMS.length).length;
+    document.getElementById('stat-done-lbl').textContent = 'Check alimentari';
+    document.getElementById('stat-streak-lbl').textContent = 'Giorni perfetti';
+    document.getElementById('stat-done').textContent = `${done}/${totalPossible}`;
+    document.getElementById('stat-streak').textContent = perfectDays;
+    document.getElementById('progress-fill').style.width = `${Math.round((done/totalPossible)*100)}%`;
+  }
+  document.getElementById('stat-week').textContent = currentWeek;
+}
+
+document.getElementById('main-tab-workout').onclick = () => { currentSection = 'workout'; render(); };
+document.getElementById('main-tab-diet').onclick = () => { currentSection = 'diet'; render(); };
+
+loadState();
+</script>
+</body>
+</html>
