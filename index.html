@@ -319,6 +319,7 @@
       <li><span class="ex-name">Riduci</span> (non eliminare): fritti, bibite zuccherate, alcol, snack confezionati</li>
       <li>Piccolo deficit calorico, niente estremi: in un mese l'obiettivo è perdere gonfiore e qualche kg, non stravolgerti</li>
       <li>Il menù sotto è uno schema settimanale che si ripete uguale ogni settimana: stessi pasti, così diventa un'abitudine senza doverci pensare</li>
+      <li>Le grammature indicate sono di riferimento, non da pesare ossessivamente: a occhio va benissimo, quello che conta è la costanza nel tempo, non la precisione al grammo</li>
     </ul>
   </div>
 
@@ -347,13 +348,13 @@ const EX_DESC = {
 };
 
 const MEALS = [
-  { colazione: 'Yogurt greco con frutta secca, miele e un frutto', pranzo: 'Petto di pollo alla griglia con insalata mista e quinoa', cena: 'Frittata di verdure con insalata' },
-  { colazione: 'Uova strapazzate (2) con pane integrale e pomodoro', pranzo: 'Pasta integrale con pomodoro fresco, basilico e ceci', cena: 'Petto di pollo alla piastra con zucchine grigliate' },
-  { colazione: 'Fiocchi d\'avena con latte, banana e cannella', pranzo: 'Insalatona con tacchino, uovo sodo e verdure miste', cena: 'Zuppa di legumi e verdure' },
-  { colazione: 'Yogurt greco con muesli senza zucchero e mirtilli', pranzo: 'Riso basmati con pollo al curry leggero e verdure saltate', cena: 'Uova e verdure saltate in padella' },
-  { colazione: 'Toast integrale con avocado e uovo in camicia', pranzo: 'Lenticchie con verdure grigliate e pane integrale', cena: 'Insalata con formaggio fresco, noci e verdure' },
-  { colazione: 'Pancake proteici (uova, banana, avena) con frutta', pranzo: 'Panino integrale con petto di pollo, verdure e hummus', cena: 'Petto di tacchino con verdure al vapore' },
-  { colazione: 'Uova alla coque con pane integrale e marmellata leggera', pranzo: 'Pollo o manzo magro arrosto con patate al forno e verdure', cena: 'Minestrone con crostini integrali e un uovo' },
+  { colazione: 'Yogurt greco (~200g) con frutta secca (~20g), miele (1 cucchiaino) e un frutto (~150g)', pranzo: 'Petto di pollo (~150g) alla griglia con insalata mista abbondante e quinoa cotta (~150g)', cena: 'Frittata di verdure (2-3 uova) con insalata' },
+  { colazione: 'Uova strapazzate (2) con pane integrale (~50g) e pomodoro', pranzo: 'Pasta integrale (~80g a crudo) con pomodoro fresco, basilico e ceci cotti (~100g)', cena: 'Petto di pollo (~130g) alla piastra con zucchine grigliate abbondanti' },
+  { colazione: 'Fiocchi d\'avena (~50g) con latte (~200ml), banana (~120g) e cannella', pranzo: 'Insalatona con tacchino (~120g), uovo sodo (1) e verdure miste abbondanti', cena: 'Zuppa di legumi (~300g) e verdure' },
+  { colazione: 'Yogurt greco (~200g) con muesli senza zucchero (~40g) e mirtilli (~80g)', pranzo: 'Riso basmati (~70g a crudo) con pollo al curry leggero (~150g) e verdure saltate', cena: 'Uova (2) e verdure saltate in padella abbondanti' },
+  { colazione: 'Toast integrale (~50g) con mezzo avocado (~70g) e uovo in camicia (1)', pranzo: 'Lenticchie cotte (~150g) con verdure grigliate abbondanti e pane integrale (~40g)', cena: 'Insalata con formaggio fresco (~100g), noci (~20g) e verdure' },
+  { colazione: 'Pancake proteici (2 uova, 1 banana, ~40g avena) con frutta fresca a lato', pranzo: 'Panino integrale (~60g pane) con petto di pollo (~120g), verdure e hummus (~30g)', cena: 'Petto di tacchino (~130g) con verdure al vapore abbondanti' },
+  { colazione: 'Uova alla coque (2) con pane integrale (~50g) e marmellata leggera (1 cucchiaino)', pranzo: 'Pollo o manzo magro arrosto (~180g) con patate al forno (~200g) e verdure', cena: 'Minestrone (~300g) con crostini integrali (~30g) e un uovo' },
 ];
 
 function dietItemsForDay(dow) {
